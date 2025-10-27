@@ -6,6 +6,14 @@
 
   {% if 'username' in session %}
     <h2>Ласкаво просимо, {{ session['username'] }}!</h2>
+    <a href="{{ url_for('users.logout') }}" class="btn btn-danger mb-4">Вийти</a>
+
+<div class="mb-4">
+    <h4>Налаштування теми:</h4>
+    <a href="{{ url_for('users.set_theme', theme='light') }}" class="btn btn-light">Світла</a>
+    <a href="{{ url_for('users.set_theme', theme='dark') }}" class="btn btn-dark">Темна</a>
+</div>
+<hr>
     <p>Тут ви можете отримати інформацію та вийти з системи.</p>
     <a href="{{ url_for('users.logout') }}" class="btn btn-danger mb-4">Вийти</a>
   {% else %}

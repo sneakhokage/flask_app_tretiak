@@ -81,3 +81,18 @@ def profile():
         return response
     all_cookies = request.cookies
     return render_template('users/profile.html', cookies=all_cookies)
+
+@users_bp.route('/set_theme')
+def set_theme():
+    """
+    Встановлює кукі 'theme' та перенаправляє на 'profile'
+    """
+    theme = request.args.get('theme')
+
+    response = make_response(redirect(url_for('users.profile')))
+
+    if theme in ['light', 'dark']:
+        response.set_cookie('theme', theme, max_age=31536000)
+        flash(f"Тему змінено на '{theme}'", "success")
+
+    return response

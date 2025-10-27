@@ -152,3 +152,27 @@ ul.checklist li:before {
     margin-top: -0.5rem;
   }
   
+  body {
+    background-color: #ffffff; 
+    color: #212529; 
+}
+
+body.dark-mode {
+    background-color: #212529; 
+    color: #f8f9fa; 
+}
+
+body.dark-mode .card,
+body.dark-mode .list-group-item,
+body.dark-mode .alert {
+    background-color: #343a40;
+    color: #f8f9fa;
+}
+
+body.dark-mode .table {
+    --bs-table-color: #f8f9fa;
+    --bs-table-bg: #343a40;
+    --bs-table-striped-bg: #2c3034;
+    --bs-table-hover-bg: #3c4146;
+    border-color: #454d55;
+}
