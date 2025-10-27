@@ -2,6 +2,8 @@ from flask import Flask
 
 app = Flask(__name__)
 
+app.config['SECRET_KEY'] = 'secret-key-for-lab-4'
+
 from app import views
 
 from app.users.views import users_bp
