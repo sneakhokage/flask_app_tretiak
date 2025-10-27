@@ -10,3 +10,8 @@ def greetings(name):
 @users_bp.route('/admin')
 def admin():
     return redirect(url_for('users.greetings', name='Administrator', age=45))
+
+@users_bp.route('/login', methods=['GET'])
+def login():
+    """Обробляє GET-запити для сторінки логіну."""
+    return render_template('users/login.html')
