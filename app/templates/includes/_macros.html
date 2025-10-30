@@ -1,0 +1,22 @@
+{# --- МАКРОС ДЛЯ РЕНДЕРИНГУ ПОЛІВ WTF-FORM --- #}
+{% macro render_field(field) %}
+  <div class="mb-3">
+    {{ field.label(class="form-label") }}
+
+    {# Окрема логіка для галочки "remember" #}
+    {% if field.type == 'BooleanField' %}
+      {{ field(class="form-check-input") }}
+    {% else %}
+      {{ field(class="form-control" + (" is-invalid" if field.errors else "")) }}
+    {% endif %}
+
+    {# Блок для показу помилок валідації #}
+    {% if field.errors %}
+      <div class="invalid-feedback">
+        {% for error in field.errors %}
+          <span>{{ error }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
