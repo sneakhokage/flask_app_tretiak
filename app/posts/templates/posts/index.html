@@ -1,40 +1,59 @@
 {% extends 'base.html' %}
 
-{% block title %}Blog Posts{% endblock %}
+{# Підключаємо наш posts.css #}
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('posts.static', filename='css/posts.css') }}">
+{% endblock %}
 
 {% block content %}
-  <div class="row">
-    <div class="col-md-8">
-      <h2>Всі пости</h2>
-    </div>
-    <div class="col-md-4 create-post-btn">
-      <a href="{{ url_for('posts.create_post') }}" class="btn btn-primary">Створити пост</a>
-    </div>
-  </div>
-  <hr>
-
-  {% if posts %}
-    {% for post in posts %}
-      <div class="card mb-3">
-        <div class="card-body">
-          <h4 class="card-title post-title">{{ post.title }}</h4>
-          <p class="post-meta">
-            Опубліковано: {{ post.posted.strftime('%Y-%m-%d %H:%M') }}
-          </p>
-
-          <p class="card-text">
-            {{ post.content | striptags | truncate(200) }}
-          </p>
-          <a href="{{ url_for('posts.post_detail', id=post.id) }}" class="btn btn-sm btn-outline-primary">
-            Читати далі
-          </a>
-        </div>
+  <div class="col-md-12">
+    <div class="row">
+      <div class="col-md-8">
+        <h2>Всі пости</h2>
       </div>
-    {% endfor %}
-  {% else %}
-    <div class="alert alert-info">
-      Ще немає жодного поста. Будьте першим!
+      <div class="col-md-4 create-post-btn">
+        <a href="{{ url_for('posts.create_post') }}" class="btn btn-primary">Add Post</a>
+      </div>
     </div>
-  {% endif %}
+    <hr>
 
+    {% if posts %}
+      <div class="row">
+        {% for post in posts %}
+          <div class="col-md-4 mb-4">
+            <div class="card h-100">
+              <img src="{{ url_for('posts.static', filename='images/post-default.png') }}" class="card-img-top" alt="Post Image">
+
+              <div class="card-body">
+                <h5 class="card-title post-title">{{ post.title }}</h5>
+
+                <p class="post-meta">
+                  Категорія: {{ post.category }} <br>
+                  Опубліковано: 
+                  {% if post.posted %}
+                    {{ post.posted.strftime('%Y-%m-%d') }}
+                  {% else %}
+                    (немає дати)
+                  {% endif %}
+                </p>
+
+                <p class="card-text">
+                  {{ post.content[:100] }}...
+                </p>
+
+                <a href="{{ url_for('posts.post_detail', id=post.id) }}" class="btn btn-outline-primary">
+                  Читати далі
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-info">
+        Ще немає жодного поста. Будьте першим!
+      </div>
+    {% endif %}
+  </div>
 {% endblock %}

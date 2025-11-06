@@ -23,7 +23,9 @@ def create_post():
     if form.validate_on_submit():
         new_post = Post(
             title=form.title.data,
-            content=form.content.data
+            category=form.category.data,
+            content=form.content.data,
+            posted=form.posted.data
         )
         try:
             db.session.add(new_post)
@@ -34,7 +36,7 @@ def create_post():
             db.session.rollback()
             flash(f'Помилка при створенні поста: {e}', 'danger')
     
-    return render_template('posts/create_post.html', form=form)
+    return render_template('posts/add_post.html', form=form)
 
 @posts_bp.route('/<int:id>')
 def post_detail(id):
@@ -56,7 +58,9 @@ def update_post(id):
     if form.validate_on_submit():
         try:
             post_to_edit.title = form.title.data
+            post_to_edit.category = form.category.data
             post_to_edit.content = form.content.data
+            post_to_edit.posted = form.posted.data
 
             db.session.commit()
             flash('Пост успішно оновлено!', 'success')
@@ -65,7 +69,7 @@ def update_post(id):
             db.session.rollback()
             flash(f'Помилка при оновленні поста: {e}', 'danger')
             
-    return render_template('posts/create_post.html', form=form, post_to_edit=post_to_edit)
+    return render_template('posts/add_post.html', form=form, post_to_edit=post_to_edit)
 
 @posts_bp.route('/<int:id>/delete', methods=['GET', 'POST'])
 def delete_post(id):
@@ -85,4 +89,4 @@ def delete_post(id):
             flash(f'Помилка при видаленні поста: {e}', 'danger')
             return redirect(url_for('posts.index'))
             
-    return render_template('posts/delete_post.html', post=post_to_delete, form=form)
+    return render_template('posts/delete_confirm.html', post=post_to_delete, form=form)

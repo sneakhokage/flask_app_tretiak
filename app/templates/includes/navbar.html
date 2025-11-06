@@ -19,6 +19,9 @@
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('products.all_products') }}">Продукти</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('posts.index') }}">Блог</a>
+        </li>
         {% if 'username' in session %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('users.profile') }}">Профіль ({{ session['username'] }})</a>

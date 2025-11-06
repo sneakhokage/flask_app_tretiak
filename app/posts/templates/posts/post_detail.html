@@ -1,30 +1,41 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ post.title }}{% endblock %}
+{# Підключаємо наш posts.css #}
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('posts.static', filename='css/posts.css') }}">
+{% endblock %}
 
 {% block content %}
-  <article>
-    <div class="row">
-      <div class="col-md-9">
-        <h2 class="post-title">{{ post.title }}</h2>
-        <p class="post-meta">
-          Опубліковано: {{ post.posted.strftime('%Y-%m-%d %H:%M') }}
-        </p>
+  <div class="col-md-12">
+    <article>
+      <h2 class="post-title">{{ post.title }}</h2>
+
+      <p class="post-meta">
+        Автор: Admin (Заглушка) <br>
+        Категорія: {{ post.category }} <br>
+        Опубліковано: 
+        {% if post.posted %}
+          {{ post.posted.strftime('%Y-%m-%d') }}
+        {% else %}
+          (немає дати)
+        {% endif %}
+      </p>
+
+      <div class="mb-3">
+        <a href="{{ url_for('posts.update_post', id=post.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+        <a href="{{ url_for('posts.delete_post', id=post.id) }}" class="btn btn-sm btn-outline-danger">Delete</a>
       </div>
-      <div class="col-md-3 text-end">
-        <a href="{{ url_for('posts.update_post', id=post.id) }}" class="btn btn-sm btn-outline-secondary">Редагувати</a>
-        <a href="{{ url_for('posts.delete_post', id=post.id) }}" class="btn btn-sm btn-outline-danger">Видалити</a>
+      <hr>
+
+      <div class="post-content">
+        {{ post.content | safe }}
       </div>
-    </div>
+    </article>
+
     <hr>
-    <div class="post-content">
-      {{ post.content | safe }}
-    </div>
-  </article>
-
-  <hr>
-  <a href="{{ url_for('posts.index') }}" class="btn btn-secondary mt-3">
-    &larr; Назад до всіх постів
-  </a>
-
+    <a href="{{ url_for('posts.index') }}" class="btn btn-secondary mt-3">
+      &larr; Назад до всіх постів
+    </a>
+  </div>
 {% endblock %}

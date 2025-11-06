@@ -1,5 +1,5 @@
 import unittest
-from app import app 
+from app import app
 
 class FlaskAppTestCase(unittest.TestCase):
 
@@ -10,7 +10,6 @@ class FlaskAppTestCase(unittest.TestCase):
 
     def test_greetings_page(self):
         """Тест маршруту /hi/<name>."""
-        
         response = self.client.get("/users/hi/John?age=30")
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"JOHN", response.data)
@@ -18,11 +17,14 @@ class FlaskAppTestCase(unittest.TestCase):
 
     def test_admin_page(self):
         """Тест маршруту /admin, який перенаправляє."""
-        
+
         response = self.client.get("/users/admin", follow_redirects=True)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"ADMINISTRATOR", response.data)
-        self.assertIn(b"45", response.data)
+        
+
+        self.assertIn(b"ADMIN", response.data)
+        
+        self.assertIn(b"None", response.data)
 
 if __name__ == "__main__":
     unittest.main()

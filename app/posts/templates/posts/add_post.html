@@ -22,15 +22,20 @@
 
       <form method="POST" action="" novalidate>
         {{ form.hidden_tag() }} {# CSRF-токен #}
-
+    
         {{ render_field(form.title) }}
+    
+        {{ render_field(form.category) }}
+    
         {{ render_field(form.content) }}
-
+    
+        {{ render_field(form.posted) }}
+    
         <div class="mb-3">
           {{ form.submit(class="btn btn-primary") }}
           <a href="{{ url_for('posts.index') }}" class="btn btn-secondary">Cancel</a>
         </div>
-      </form>
+    </form>
 
     </div>
   </div>

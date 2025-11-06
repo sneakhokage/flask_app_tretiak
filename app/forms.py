@@ -3,6 +3,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, TextAreaField, SubmitField, PasswordField, BooleanField
 
 from wtforms.validators import DataRequired, Email, Length, Regexp, email
+from wtforms.fields import DateField
+from datetime import datetime
 
 class ContactForm(FlaskForm):
     """
@@ -52,14 +54,28 @@ class LoginForm(FlaskForm):
 
 class PostForm(FlaskForm):
     """
-    Клас форми для створення та редагування поста.
+    Клас форми
     """
     title = StringField('Title', validators=[
         DataRequired(message="Це поле є обов'язковим.")
     ])
 
+    category = SelectField('Category', 
+        choices=[
+            ('General', 'Загальне'),
+            ('Technology', 'Технології'),
+            ('News', 'Новини'),
+            ('Personal', 'Особисте')
+        ], 
+        validators=[DataRequired(message="Будь ласка, оберіть категорію.")]
+    )
+
     content = TextAreaField('Content', validators=[
         DataRequired(message="Це поле є обов'язковим.")
     ])
+
+    posted = DateField('Publish Date', format='%Y-%m-%d', validators=[
+        DataRequired(message="Будь ласка, введіть дату.")
+    ], default=datetime.today)
 
     submit = SubmitField('Save Post')
