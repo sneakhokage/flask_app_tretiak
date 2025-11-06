@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+  <article>
+    <div class="row">
+      <div class="col-md-9">
+        <h2 class="post-title">{{ post.title }}</h2>
+        <p class="post-meta">
+          Опубліковано: {{ post.posted.strftime('%Y-%m-%d %H:%M') }}
+        </p>
+      </div>
+      <div class="col-md-3 text-end">
+        <a href="{{ url_for('posts.update_post', id=post.id) }}" class="btn btn-sm btn-outline-secondary">Редагувати</a>
+        <a href="{{ url_for('posts.delete_post', id=post.id) }}" class="btn btn-sm btn-outline-danger">Видалити</a>
+      </div>
+    </div>
+    <hr>
+    <div class="post-content">
+      {{ post.content | safe }}
+    </div>
+  </article>
+
+  <hr>
+  <a href="{{ url_for('posts.index') }}" class="btn btn-secondary mt-3">
+    &larr; Назад до всіх постів
+  </a>
+
+{% endblock %}

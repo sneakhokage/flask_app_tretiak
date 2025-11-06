@@ -49,3 +49,17 @@ class LoginForm(FlaskForm):
     remember = BooleanField("Запам'ятати мене")
     
     submit = SubmitField('Sign In')
+
+class PostForm(FlaskForm):
+    """
+    Клас форми для створення та редагування поста.
+    """
+    title = StringField('Title', validators=[
+        DataRequired(message="Це поле є обов'язковим.")
+    ])
+
+    content = TextAreaField('Content', validators=[
+        DataRequired(message="Це поле є обов'язковим.")
+    ])
+
+    submit = SubmitField('Save Post')

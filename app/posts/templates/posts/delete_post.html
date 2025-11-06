@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Deletion{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card text-center">
+        <div class="card-header bg-danger text-white">
+          Підтвердження видалення
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Ви впевнені, що хочете видалити цей пост?</h5>
+          <p class="card-text">"{{ post.title }}"</p>
+
+          <p class="text-danger">Цю дію неможливо скасувати!</p>
+
+          <form method="POST" action="{{ url_for('posts.delete_post', id=post.id) }}">
+            {{ form.hidden_tag() }}
+            <button type="submit" class="btn btn-danger">Так, видалити</button>
+            <a href="{{ url_for('posts.post_detail', id=post.id) }}" class="btn btn-secondary">
+              Скасувати
+            </a>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Blog Posts{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col-md-8">
+      <h2>Всі пости</h2>
+    </div>
+    <div class="col-md-4 create-post-btn">
+      <a href="{{ url_for('posts.create_post') }}" class="btn btn-primary">Створити пост</a>
+    </div>
+  </div>
+  <hr>
+
+  {% if posts %}
+    {% for post in posts %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h4 class="card-title post-title">{{ post.title }}</h4>
+          <p class="post-meta">
+            Опубліковано: {{ post.posted.strftime('%Y-%m-%d %H:%M') }}
+          </p>
+
+          <p class="card-text">
+            {{ post.content | striptags | truncate(200) }}
+          </p>
+          <a href="{{ url_for('posts.post_detail', id=post.id) }}" class="btn btn-sm btn-outline-primary">
+            Читати далі
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="alert alert-info">
+      Ще немає жодного поста. Будьте першим!
+    </div>
+  {% endif %}
+
+{% endblock %}

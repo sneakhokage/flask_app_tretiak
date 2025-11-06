@@ -176,3 +176,29 @@ body.dark-mode .table {
     --bs-table-hover-bg: #3c4146;
     border-color: #454d55;
 }
+
+.post-title {
+  font-size: 2.25rem; 
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.post-meta {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+
+.post-content {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  padding-top: 1rem;
+}
+
+.create-post-btn {
+  text-align: right;
+}
+
+body.dark-mode .post-meta {
+  color: #adb5bd;
+}
