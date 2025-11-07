@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% from 'includes/_macros.html' import render_field with context %}
+
+{% block title %}
+  {% if post_to_edit %}
+    Edit Post - {{ post_to_edit.title }}
+  {% else %}
+    Create a New Post
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+
+      {% if post_to_edit %}
+        <h2>Edit Post</h2>
+      {% else %}
+        <h2>Create a New Post</h2>
+      {% endif %}
+
+      <form method="POST" action="" novalidate>
+        {{ form.hidden_tag() }} {# CSRF-токен #}
+    
+        {{ render_field(form.title) }}
+    
+        {{ render_field(form.category) }}
+    
+        {{ render_field(form.content) }}
+    
+        {{ render_field(form.posted) }}
+    
+        <div class="mb-3">
+          {{ form.submit(class="btn btn-primary") }}
+          <a href="{{ url_for('posts.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile Page{% endblock %}
+
+{% block content %}
+
+  {% if 'username' in session %}
+    <h2>Ласкаво просимо, {{ session['username'] }}!</h2>
+    <a href="{{ url_for('users.logout') }}" class="btn btn-danger mb-4">Вийти</a>
+
+<div class="mb-4">
+    <h4>Налаштування теми:</h4>
+    <a href="{{ url_for('users.set_theme', theme='light') }}" class="btn btn-light">Світла</a>
+    <a href="{{ url_for('users.set_theme', theme='dark') }}" class="btn btn-dark">Темна</a>
+</div>
+  {% else %}
+    <div class="alert alert-warning">
+        Ви не увійшли в систему. Будь ласка, <a href="{{ url_for('users.login') }}" class="alert-link">увійдіть</a>.
+    </div>
+  {% endif %}
+
+  {% if 'username' in session %}
+  <hr>
+  <div class="row">
+    <div class="col-md-6">
+
+      <h4>Додати кукі:</h4>
+      <form method="POST" action="{{ url_for('users.profile') }}">
+        <input type="hidden" name="action" value="add_cookie">
+        <div class="mb-3">
+          <label for="cookie_key" class="form-label">Ключ кукі</label>
+          <input type="text" class="form-control" id="cookie_key" name="cookie_key" required>
+        </div>
+        <div class="mb-3">
+          <label for="cookie_value" class="form-label">Значення кукі</label>
+          <input type="text" class="form-control" id="cookie_value" name="cookie_value" required>
+        </div>
+        <div class="mb-3">
+          <label for="cookie_expires" class="form-label">Термін дії (сек)</label>
+          <input type="number" class="form-control" id="cookie_expires" name="cookie_expires" min="0">
+        </div>
+        <button type="submit" class="btn btn-primary">Додати кукі</button>
+      </form>
+
+      <hr>
+
+      <h4>Видалити кукі за ключем:</h4>
+      <form method="POST" action="{{ url_for('users.profile') }}">
+        <input type="hidden" name="action" value="delete_cookie">
+        <div class="mb-3">
+          <label for="delete_key" class="form-label">Ключ кукі для видалення:</label>
+          <input type="text" class="form-control" id="delete_key" name="delete_key" required>
+        </div>
+        <button type="submit" class="btn btn-warning">Видалити кукі за ключем</button>
+      </form>
+
+      <hr>
+
+      <h4>Видалити всі кукі:</h4>
+      <form method="POST" action="{{ url_for('users.profile') }}">
+        <input type="hidden" name="action" value="delete_all_cookies">
+        <p class="text-muted small">Це видалить всі кукі, крім сесійних.</p>
+        <button type="submit" class="btn btn-danger">Видалити всі кукі</button>
+      </form>
+
+    </div>
+
+    <div class="col-md-6">
+      <h4>Список всіх кукі:</h4>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Ключ</th>
+            <th scope="col">Значення</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if cookies %}
+            {% for key, value in cookies.items() %}
+            <tr>
+              <td>{{ key }}</td>
+              <td>{{ value | truncate(50) }}</td>
+            </tr>
+            {% endfor %}
+          {% else %}
+          <tr>
+            <td colspan="2">Кукі не знайдено.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+{% endblock %}
