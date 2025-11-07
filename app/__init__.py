@@ -1,27 +1,37 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from config import config  
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+db = SQLAlchemy()
+migrate = Migrate()
 
-app = Flask(__name__)
+def create_app(config_name=os.getenv('FLASK_ENV', 'default')):
+    """
+    Створення екземпляру додатку Flask.
+    """
+    app = Flask(__name__)
+    
+    app.config.from_object(config[config_name])
 
-app.config['SECRET_KEY'] = 'secret-key-for-lab-4'
+    db.init_app(app)
+    migrate.init_app(app, db)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, '..', 'blog.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    from .users import users_bp
+    app.register_blueprint(users_bp, url_prefix='/users')
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+    from .products import products_bp
+    app.register_blueprint(products_bp, url_prefix='/products')
 
-from app import views
+    from .posts import posts_bp
+    app.register_blueprint(posts_bp, url_prefix='/post')
 
-from .users import users_bp 
-app.register_blueprint(users_bp, url_prefix='/users')
+    from .views import main_bp
+    app.register_blueprint(main_bp)
 
-from .products import products_bp
-app.register_blueprint(products_bp, url_prefix='/products')
+    @app.errorhandler(404)
+    def not_found_error(error):
+        return render_template('404.html'), 404
 
-from .posts import posts_bp
-app.register_blueprint(posts_bp, url_prefix='/post')
+    return app

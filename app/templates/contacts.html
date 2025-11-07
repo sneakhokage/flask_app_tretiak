@@ -6,7 +6,7 @@
       <h2>Контактна форма</h2>
       <p>Будь ласка, заповніть форму нижче, щоб зв'язатися з нами.</p>
 
-      <form method="POST" action="{{ url_for('contacts') }}" novalidate>
+      <form method="POST" action="{{ url_for('main.contacts') }}" novalidate>
         {{ form.hidden_tag() }}
 
         <div class="mb-3">
