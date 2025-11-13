@@ -1,12 +1,19 @@
-from . import products_bp 
-from flask import render_template
+from . import post_bp
+from flask import render_template, abort, flash, redirect, url_for, request, jsonify
+from .. import db
+from .models import Product
+from sqlalchemy import select 
 
-@products_bp.route('/') 
-def all_products():
-    products_list = ["Ноутбук", "Мишка", "Клавіатура"]
+@post_bp.route('/products', methods=['GET']) 
+def get_products():
+    stmt = select(Product).order_by(Product.name.desc()) 
+    products = db.session.scalars(stmt).all()
+    return render_template("products.html", products=products)
     
-    return render_template("products/products.html", products=products_list)
-
-@products_bp.route('/<int:product_id>')
-def product_details(product_id):
-    return f"<h1>Деталі для продукту {product_id}</h1>"
+@post_bp.route('/products/<int:id>') 
+def detail_post(id):
+    product = db.session.get(Product, id)
+    if not product:
+        abort(404, description="Product not found") 
+    return render_template("detail_post.html", 
+                           product=product)

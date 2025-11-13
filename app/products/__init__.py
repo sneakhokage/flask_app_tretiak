@@ -1,5 +1,6 @@
 from flask import Blueprint
 
-products_bp = Blueprint('products', __name__, template_folder='templates')
+post_bp = Blueprint('product', __name__,template_folder="templates/products", static_folder="static")
 
 from . import views
+from . import models
