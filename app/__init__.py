@@ -24,9 +24,6 @@ def create_app(config_name=os.getenv('FLASK_ENV', 'default')):
     from .products import products_bp
     app.register_blueprint(products_bp, url_prefix='/products')
 
-    from .posts import posts_bp
-    app.register_blueprint(posts_bp, url_prefix='/post')
-
     from .views import main_bp
     app.register_blueprint(main_bp)
 
