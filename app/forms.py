@@ -1,10 +1,17 @@
 from flask_wtf import FlaskForm
 
-from wtforms import StringField, SelectField, TextAreaField, SubmitField, PasswordField, BooleanField
-
+from sqlalchemy import select
+from wtforms import StringField, SelectField, TextAreaField, SubmitField, PasswordField, BooleanField, DateTimeLocalField
 from wtforms.validators import DataRequired, Email, Length, Regexp, email
 from wtforms.fields import DateField
 from datetime import datetime
+
+CATEGORIES = [
+    ('General', 'Загальне'),
+    ('Technology', 'Технології'),
+    ('News', 'Новини'),
+    ('Personal', 'Особисте')
+]
 
 class ContactForm(FlaskForm):
     """
@@ -53,29 +60,24 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Sign In')
 
 class PostForm(FlaskForm):
-    """
-    Клас форми
-    """
-    title = StringField('Title', validators=[
-        DataRequired(message="Це поле є обов'язковим.")
-    ])
-
-    category = SelectField('Category', 
-        choices=[
-            ('General', 'Загальне'),
-            ('Technology', 'Технології'),
-            ('News', 'Новини'),
-            ('Personal', 'Особисте')
-        ], 
-        validators=[DataRequired(message="Будь ласка, оберіть категорію.")]
-    )
-
-    content = TextAreaField('Content', validators=[
-        DataRequired(message="Це поле є обов'язковим.")
-    ])
-
-    posted = DateField('Publish Date', format='%Y-%m-%d', validators=[
-        DataRequired(message="Будь ласка, введіть дату.")
-    ], default=datetime.today)
+    title = StringField('Title', validators=[DataRequired()])
+    content = TextAreaField('Content', validators=[DataRequired()])
+    is_active = BooleanField('Is Active')
+    posted = DateField('Publish Date', format='%Y-%m-%d', default=datetime.today, validators=[DataRequired()])
+    category = SelectField('Category', choices=CATEGORIES, validators=[DataRequired()])
+    author_id = SelectField('Author', coerce=int, validators=[DataRequired()])
 
     submit = SubmitField('Save Post')
+
+    def __init__(self, *args, **kwargs):
+        """
+        Завантажуємо список авторів при створенні форми.
+        """
+        super().__init__(*args, **kwargs)
+        
+        from app import db
+        from app.users.models import User
+        
+        with db.session() as session:
+            users = session.scalars(select(User).order_by(User.id)).all()
+            self.author_id.choices = [(user.id, user.username) for user in users]

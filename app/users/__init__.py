@@ -6,3 +6,4 @@ users_bp = Blueprint('users', __name__,
                      static_url_path='/users/static')
 
 from . import views
+from . import models

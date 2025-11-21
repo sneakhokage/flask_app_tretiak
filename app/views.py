@@ -24,3 +24,4 @@ def contacts():
         return redirect(url_for('main.contacts'))
 
     return render_template('contacts.html', title='Контакти', form=form)
+

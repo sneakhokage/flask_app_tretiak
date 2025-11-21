@@ -38,6 +38,9 @@ def create_app(config_name: str = os.environ.get("production", "default")) -> Fl
     from .products import products_bp
     app.register_blueprint(products_bp, url_prefix='/products')
 
+    from .posts import posts_bp
+    app.register_blueprint(posts_bp, url_prefix='/blog')
+
     from .views import main_bp
     app.register_blueprint(main_bp)
 
