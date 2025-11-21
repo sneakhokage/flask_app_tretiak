@@ -202,3 +202,15 @@ body.dark-mode .table {
 body.dark-mode .post-meta {
   color: #adb5bd;
 }
+
+.post-tag {
+  color: #49fb03; 
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.post-tag:hover {
+  color: #59ff00; 
+  text-decoration: underline;
+}

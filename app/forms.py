@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 
 from sqlalchemy import select
-from wtforms import StringField, SelectField, TextAreaField, SubmitField, PasswordField, BooleanField, DateTimeLocalField
+from wtforms import StringField, SelectField, TextAreaField, SubmitField, PasswordField, BooleanField, DateTimeLocalField, SelectMultipleField
 from wtforms.validators import DataRequired, Email, Length, Regexp, email
 from wtforms.fields import DateField
 from datetime import datetime
@@ -66,18 +66,20 @@ class PostForm(FlaskForm):
     posted = DateField('Publish Date', format='%Y-%m-%d', default=datetime.today, validators=[DataRequired()])
     category = SelectField('Category', choices=CATEGORIES, validators=[DataRequired()])
     author_id = SelectField('Author', coerce=int, validators=[DataRequired()])
-
+    tags = SelectMultipleField("Tags", coerce=int)
     submit = SubmitField('Save Post')
 
     def __init__(self, *args, **kwargs):
-        """
-        Завантажуємо список авторів при створенні форми.
-        """
         super().__init__(*args, **kwargs)
         
         from app import db
         from app.users.models import User
+        from app.posts.models import Tag 
         
         with db.session() as session:
+
             users = session.scalars(select(User).order_by(User.id)).all()
             self.author_id.choices = [(user.id, user.username) for user in users]
+
+            tags = session.scalars(select(Tag).order_by(Tag.name)).all()
+            self.tags.choices = [(tag.id, tag.name) for tag in tags]

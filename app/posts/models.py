@@ -1,6 +1,6 @@
 from .. import db
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String, Text, ForeignKey, DateTime, Boolean
+from sqlalchemy import Integer, String, Text, ForeignKey, DateTime, Boolean, text
 from sqlalchemy.sql import func
 from datetime import datetime
 from typing import TYPE_CHECKING
@@ -39,7 +39,7 @@ class Post(db.Model):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True,server_default=text('1'))
     user: Mapped["User"] = relationship("User", back_populates="posts")
 
     tags: Mapped[list["Tag"]] = relationship(secondary=post_tags, back_populates="posts")
