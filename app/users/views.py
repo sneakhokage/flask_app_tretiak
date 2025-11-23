@@ -1,8 +1,11 @@
 from flask import render_template, request, url_for, redirect, session, flash, make_response
+from sqlalchemy import select
 
 from . import users_bp 
-
-from app.forms import LoginForm
+from app import db
+from app.users.models import User 
+from app.forms import LoginForm, RegistrationForm
+from app import bcrypt
 
 @users_bp.route("/hi/<string:name>")
 def greetings(name):
@@ -13,24 +16,65 @@ def greetings(name):
 def admin():
     return redirect(url_for(".greetings", name="ADMIN"))
 
+@users_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if 'username' in session:
+        return redirect(url_for('users.profile'))
+
+    form = RegistrationForm()
+    if form.validate_on_submit():
+    
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+
+        user = User(
+            username=form.username.data, 
+            email=form.email.data, 
+            password=hashed_password
+        )
+
+        db.session.add(user)
+        db.session.commit()
+
+        flash('Ваш акаунт створено! Тепер ви можете увійти', 'success')
+        return redirect(url_for('users.login'))
+
+    return render_template('users/register.html', form=form)
+
 @users_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    if 'username' in session:
+        return redirect(url_for('users.account'))
+
     form = LoginForm() 
     
     if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-        remember = form.remember.data
+        user = db.session.scalar(select(User).where(User.username == form.username.data))
 
-        if username == 'admin' and password == '12345':
-            session['username'] = username
-            flash_message = f"Ви успішно увійшли! Опцію 'Запам'ятати мене' {'обрано' if remember else 'не обрано'}."
+        if user and user.check_password(form.password.data):
+            session['username'] = user.username 
+            
+            flash_message = f"Вітаю, {user.username}! Ви успішно увійшли"
             flash(flash_message, "success")
-            return redirect(url_for('users.profile'))
+
+            return redirect(url_for('users.account'))
         else:
-            flash("Неправильне ім'я користувача або пароль. Спробуйте ще раз!", "danger")
+            flash("Неправильне ім'я користувача або пароль.", "danger")
             
     return render_template('users/login.html', form=form)
+
+@users_bp.route('/account')
+def account():
+    if 'username' not in session:
+        flash("Будь ласка, увійдіть, щоб переглянути цю сторінку.", "warning")
+        return redirect(url_for('users.login'))
+
+    username = session['username']
+    user = db.session.scalar(select(User).where(User.username == username))
+    
+    email = user.email if user else "Невідомо"
+    
+    return render_template('users/account.html', username=username, email=email)
+
 
 @users_bp.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -88,3 +132,10 @@ def set_theme():
         response.set_cookie('theme', theme, max_age=31536000)
         flash(f"Тему змінено на '{theme}'", "success")
     return response
+
+@users_bp.route('/users')
+def users_list():
+    users = db.session.scalars(select(User)).all()
+    count = len(users)
+    
+    return render_template('users/users_list.html', users=users, count=count)
