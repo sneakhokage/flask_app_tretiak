@@ -3,11 +3,17 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String
 from typing import TYPE_CHECKING
 from flask_bcrypt import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+from app import login_manager
 
 if TYPE_CHECKING:                
     from app.posts.models import Post
 
-class User(db.Model):
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
+
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
