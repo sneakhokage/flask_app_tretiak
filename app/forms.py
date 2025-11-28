@@ -1,10 +1,12 @@
 from flask_wtf import FlaskForm
 
 from sqlalchemy import select
-from wtforms import StringField, SelectField, TextAreaField, SubmitField, PasswordField, BooleanField, DateTimeLocalField, SelectMultipleField
+from wtforms import StringField, SelectField, TextAreaField, SubmitField, TextAreaField, PasswordField, BooleanField, DateTimeLocalField, SelectMultipleField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError, Regexp
 from wtforms.fields import DateField
 from datetime import datetime
+from flask_login import current_user
+from flask_wtf.file import FileField, FileAllowed
 
 CATEGORIES = [
     ('General', 'Загальне'),
@@ -79,23 +81,56 @@ class RegistrationForm(FlaskForm):
     ])
     submit = SubmitField('Sign Up')
 
+class UpdateAccountForm(FlaskForm):
+    """Форма для оновлення даних акаунта (username, email)."""
+    username = StringField('Username', validators=[
+        DataRequired(),
+        Length(min=4, max=14, message="Ім'я користувача має бути від 4 до 14 символів."),
+        Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0, 'Username must have only letters, numbers, dots or underscores')
+    ])
+    email = StringField('Email', validators=[
+        DataRequired(),
+        Email(message="Введіть коректну email адресу.")
+    ])
+
+    picture = FileField('Update Profile Picture', validators=[
+        FileAllowed(['jpg', 'png', 'jpeg'], 'Лише зображення!')
+    ])
+    about_me = TextAreaField('About Me', validators=[Length(min=0, max=140)])
+
+    submit = SubmitField('Update')
+
     def validate_username(self, field):
         from app import db
         from app.users.models import User
-        from sqlalchemy import select
 
-        user = db.session.scalar(select(User).where(User.username == field.data))
-        if user:
-            raise ValidationError('Таке ім\'я користувача вже зайняте.')
+        if field.data != current_user.username:
+            user = db.session.scalar(select(User).where(User.username == field.data))
+            if user:
+                raise ValidationError('Таке ім\'я користувача вже зайняте.')
 
     def validate_email(self, field):
         from app import db
         from app.users.models import User
-        from sqlalchemy import select
 
-        user = db.session.scalar(select(User).where(User.email == field.data))
-        if user:
-            raise ValidationError('Ця електронна пошта вже зареєстрована.')
+        if field.data != current_user.email:
+            user = db.session.scalar(select(User).where(User.email == field.data))
+            if user:
+                raise ValidationError('Ця електронна пошта вже зайнята.')
+
+class ChangePasswordForm(FlaskForm):
+    current_password = PasswordField('Current Password', validators=[
+        DataRequired(message="Введіть поточний пароль.")
+    ])
+    new_password = PasswordField('New Password', validators=[
+        DataRequired(message="Введіть новий пароль."),
+        Length(min=6, message="Пароль має бути мінімум 6 символів.")
+    ])
+    confirm_password = PasswordField('Confirm Password', validators=[
+        DataRequired(),
+        EqualTo('new_password', message='Паролі повинні співпадати.')
+    ])
+    submit = SubmitField('Change Password')
 
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])

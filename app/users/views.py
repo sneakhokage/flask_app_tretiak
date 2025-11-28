@@ -1,11 +1,15 @@
-from flask import render_template, request, url_for, redirect, session, flash, make_response
+import os
+from flask import current_app, render_template, request, url_for, redirect, session, flash, make_response
 from sqlalchemy import select
 from . import users_bp 
 from app import db
 from app.users.models import User 
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, UpdateAccountForm, ChangePasswordForm
 from app import bcrypt
 from flask_login import login_user, current_user, logout_user, login_required
+from PIL import Image
+from werkzeug.utils import secure_filename
+from datetime import datetime, timezone
 
 @users_bp.route("/hi/<string:name>")
 def greetings(name):
@@ -62,12 +66,65 @@ def login():
             
     return render_template('users/login.html', form=form)
 
-@users_bp.route('/account')
-@login_required 
+def save_picture(form_picture):
+    filename = secure_filename(form_picture.filename)
+    
+    picture_path = os.path.join(current_app.root_path, 'static/profile_pics', filename)
+
+    output_size = (128, 128)
+    i = Image.open(form_picture)
+    i.thumbnail(output_size)
+    
+    i.save(picture_path)
+
+    return filename
+
+@users_bp.before_app_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.now(timezone.utc)
+        db.session.commit()
+
+@users_bp.route('/account', methods=['GET', 'POST'])
+@login_required
 def account():
-    return render_template('users/account.html', 
-                           username=current_user.username, 
-                           email=current_user.email)
+    form = UpdateAccountForm()
+
+    if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            current_user.image = picture_file
+            
+        current_user.about_me = form.about_me.data    
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Ваш акаунт було оновлено!', 'success')
+        return redirect(url_for('users.account'))
+    
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        form.about_me.data = current_user.about_me
+
+    image_file = url_for('static', filename='profile_pics/' + current_user.image)
+    return render_template('users/account.html', image_file=image_file, form=form)
+
+@users_bp.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    
+    if form.validate_on_submit():
+        if current_user.check_password(form.current_password.data):
+            current_user.set_password(form.new_password.data)
+            db.session.commit()
+            flash('Ваш пароль успішно змінено!', 'success')
+            return redirect(url_for('users.account'))
+        else:
+            flash('Невірний поточний пароль.', 'danger')
+            
+    return render_template('users/change_password.html', form=form)
 
 @users_bp.route('/logout')
 def logout():
