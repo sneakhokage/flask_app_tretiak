@@ -53,6 +53,9 @@ def create_app(config_name: str = os.environ.get("production", "default")) -> Fl
     from .views import main_bp
     app.register_blueprint(main_bp)
 
+    from .it_courses import it_courses_bp
+    app.register_blueprint(it_courses_bp, url_prefix='/courses')
+
     @app.errorhandler(404)
     def not_found_error(error):
         return render_template('404.html'), 404

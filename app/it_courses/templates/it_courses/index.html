@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% from 'includes/_macros.html' import render_field %}
+
+{% block title %}IT Курси{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h1>Каталог IT курсів</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('it_courses.create') }}" class="btn btn-success">
+            + Додати курс
+        </a>
+    </div>
+</div>
+
+<div class="card bg-light mb-4 p-3">
+    <form method="GET" action="{{ url_for('it_courses.index') }}" class="d-flex gap-2">
+        {{ search_form.query(class="form-control", placeholder="Пошук за назвою...") }}
+        {{ search_form.submit(class="btn btn-primary") }}
+        <a href="{{ url_for('it_courses.index') }}" class="btn btn-outline-secondary">Скинути</a>
+    </form>
+</div>
+
+<div class="row">
+    {% for course in courses %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                <span class="badge bg-info text-dark">{{ course.category.name }}</span>
+                <span class="text-success fw-bold">${{ course.price }}</span>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ course.title }}</h5>
+                <p class="card-text text-truncate">{{ course.description }}</p>
+                <small class="text-muted">Автор: {{ course.user.username }}</small>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{{ url_for('it_courses.detail', id=course.id) }}" class="btn btn-outline-primary w-100">Деталі</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-warning">Курсів не знайдено.</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

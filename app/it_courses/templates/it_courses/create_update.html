@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% from 'includes/_macros.html' import render_field %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4>{{ title }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    {{ render_field(form.title) }}
+                    {{ render_field(form.category_id) }}
+                    {{ render_field(form.price) }}
+                    {{ render_field(form.duration_hours) }}
+                    {{ render_field(form.description) }}
+                    
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-success btn-lg") }}
+                        <a href="{{ url_for('it_courses.index') }}" class="btn btn-secondary">Скасувати</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

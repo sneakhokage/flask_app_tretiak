@@ -107,7 +107,7 @@ def account():
         form.email.data = current_user.email
         form.about_me.data = current_user.about_me
 
-    image_file = url_for('static', filename='profile_pics/' + current_user.image)
+    image_file = url_for('static', filename='profile_pics/' + (current_user.image or 'profile_default.jpg'))
     return render_template('users/account.html', image_file=image_file, form=form)
 
 @users_bp.route('/change_password', methods=['GET', 'POST'])
