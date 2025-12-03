@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% from 'includes/_macros.html' import render_field %}
+
+{% block title %}Account{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body">
+                
+                <div class="d-flex align-items-center mb-3">
+                    <div class="me-4">
+                        <img src="{{ image_file }}" alt="Profile Picture" class="rounded-circle" style="width: 128px; height: 128px; object-fit: cover;">
+                    </div>
+                    <div>
+                        <h2 class="card-title mb-1">{{ current_user.username }}</h2>
+                        <p class="text-muted mb-0">{{ current_user.email }}</p>
+                        {% if current_user.last_seen %}
+                            <p class="text-muted small mb-0">
+                                Last seen: {{ current_user.last_seen.strftime('%Y-%m-%d %H:%M:%S') }} UTC
+                            </p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <hr>
+
+                <form method="POST" action="" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+                    
+                    <fieldset class="form-group">
+                        <legend class="border-bottom mb-4">Account Info</legend>
+                        
+                        {{ render_field(form.username) }}
+                        {{ render_field(form.email) }}
+                        
+                        <div class="mb-3">
+                            {{ form.about_me.label(class="form-label") }}
+                            {{ form.about_me(class="form-control", rows=3) }}
+                            {% if form.about_me.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.about_me.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.picture.label(class="form-label") }}
+                            {{ form.picture(class="form-control") }}
+                            {% if form.picture.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.picture.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </fieldset>
+                    
+                    <div class="form-group mt-3">
+                        {{ form.submit(class="btn btn-outline-info") }}
+                    </div>
+                </form>
+
+                <hr>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('users.change_password') }}" class="btn btn-warning">Змінити пароль</a>
+                    
+                    <a href="{{ url_for('users.logout') }}" class="btn btn-danger">Logout</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+
+    <div class="col-md-3">
+        <div class="list-group">
+            <a href="{{ url_for('users.greetings', name='John') }}" class="list-group-item list-group-item-action">Hi John</a>
+            <a href="{{ url_for('users.greetings', name='Anna') }}?age=25" class="list-group-item list-group-item-action">Hi Anna (25)</a>
+            <a href="{{ url_for('users.admin') }}" class="list-group-item list-group-item-action">Admin (45)</a>
+        </div>
+    </div>
+
+
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Greetings Page</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Name (upper):</strong> {{ name.upper() }}</p>
+                <p><strong>Age:</strong> {{ age }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
